@@ -12,4 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 88e35015b6303c244a9ee5d6d706b566, type: 3}
   m_Name: AK-47
   m_EditorClassIdentifier: 
-  isActive: 0
+  Name: 
+  isActive: 1
+  isShooting: 0
+  fireRate: 2
+  nextTimeToFire: 0

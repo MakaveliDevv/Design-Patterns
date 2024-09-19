@@ -4,6 +4,7 @@ using UnityEngine;
 public interface ICommand
 {
     void Execute();
+    void Undo();
 }
 
 public class JumpCommand : ICommand 
@@ -12,18 +13,25 @@ public class JumpCommand : ICommand
     {
         Debug.Log("Jump");
     }
+
+    public void Undo() 
+    {
+        Debug.Log("Undo from jump class");
+    }
 }
 
 public class WeaponSwitchCommand : ICommand 
 {
-    private readonly List<ScriptableObject> weaponInventory;
+    private readonly List<Weapon> weaponInventory;
+    private readonly List<Weapon> activeWeaponInv;
     public Weapon currentWeapon;
     public bool isWeaponSwitched;
     private int currentWeaponIndex;
 
-    public WeaponSwitchCommand(List<ScriptableObject> weaponInventory) 
+    public WeaponSwitchCommand(List<Weapon> weaponInventory, List<Weapon> activeWeaponInv) 
     {
         this.weaponInventory = weaponInventory;
+        this.activeWeaponInv = activeWeaponInv;
     }
 
     public void Execute()
@@ -32,19 +40,28 @@ public class WeaponSwitchCommand : ICommand
         Debug.Log("Weapon Switched");
     }
 
+    public void Undo() 
+    {
+        Debug.Log("Undo from WeaponSwitch class");
+    }
+
     public void SwitchWeaponMethod() 
     {
-        // Weapon currentWeapon = null;
+        // Deactivate all weapons
+        foreach (Weapon weapon in weaponInventory)
+        {
+            weapon.isActive = false;
+            activeWeaponInv.Clear();
+        }
+
         for (int i = 0; i < weaponInventory.Count; i++)
         {
-            Weapon weapon = (Weapon)weaponInventory[i];
+            Weapon weapon = weaponInventory[i];
 
             if(weapon.isActive) 
             {
-                // Get the index from that weapon
                 currentWeaponIndex = i;
                 currentWeapon = weapon;
-                Debug.Log($"{currentWeapon}");
                 break;
             }
         }
@@ -59,31 +76,26 @@ public class WeaponSwitchCommand : ICommand
             return;
         }
 
-        // Get the next weapon in the list
         int nextWeaponIndex = (currentWeaponIndex + 1) % weaponInventory.Count;
-
-        // Deactivate the current weapon
-        currentWeapon.isActive = false;
-        Debug.Log($"{currentWeapon.name} turned off");
-        
-        // Activate the next weapon
-        Weapon nextWeapon = (Weapon)weaponInventory[nextWeaponIndex];
-        nextWeapon.isActive = true;
-        Debug.Log($"{nextWeapon.name}");
-
-        // Store the current selected weapon index
+        Weapon nextWeapon = weaponInventory[nextWeaponIndex];
         currentWeaponIndex = nextWeaponIndex;
-        Debug.Log($"The {currentWeaponIndex} is now stored as the {nextWeaponIndex}");
+        activeWeaponInv.Add(nextWeapon);
 
-        isWeaponSwitched = true;
+        
+        if(activeWeaponInv.Contains(nextWeapon)) 
+        {
+            isWeaponSwitched = true;
+            nextWeapon.isActive = true;
+        }
     }
 }
 
 public class ShootCommand : ICommand
 {
-    private readonly List<ScriptableObject> weaponInventory;
+    private readonly List<Weapon> weaponInventory;
+    private Weapon activeWeapon;
 
-    public ShootCommand(List<ScriptableObject> weaponInventory) 
+    public ShootCommand(List<Weapon> weaponInventory) 
     {
         this.weaponInventory = weaponInventory;
     }
@@ -93,17 +105,41 @@ public class ShootCommand : ICommand
         ShootMethod();
     }
 
+    public void Undo() 
+    {
+        StopShooting();
+
+        Debug.Log("Undo from Shoot class");
+    }
+
     public void ShootMethod() 
     {
-        // Check if the weapon is active
-        // Need a reference to the scriptobject in the weaponInventory
-        for (int i = 0; i < weaponInventory.Count; i++)
+        // Find the active weapon, should only be one
+        activeWeapon = weaponInventory.Find(w => w.isActive);
+        activeWeapon.nextTimeToFire = 0f;
+
+        if (activeWeapon == null)
         {
-            Weapon weapon = (Weapon)weaponInventory[i];
-            if(weapon.isActive) 
-            {
-                Debug.Log($"Shooting with {weapon}");
-            }
+            Debug.LogError("No active weapon found at initialization!");
+            return;
+        }
+
+        // Shoot only the active weapon if enough time has passed
+        if (Time.time >= activeWeapon.nextTimeToFire)
+        {
+            activeWeapon.isShooting = true;
+            activeWeapon.nextTimeToFire = Time.time + 1f / activeWeapon.fireRate;
+            Debug.Log($"Shooting with {activeWeapon.name}");
+        }
+    }
+
+    public void StopShooting()
+    {
+        if (activeWeapon != null)
+        {
+            // activeWeapon.nextTimeToFire = 0f;
+            activeWeapon.isShooting = false;
+            Debug.Log($"Stopped shooting with {activeWeapon.name}");
         }
     }
 }

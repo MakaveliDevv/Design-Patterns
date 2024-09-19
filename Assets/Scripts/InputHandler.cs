@@ -3,12 +3,32 @@ using UnityEngine;
 public class InputHandler
 {
     private readonly List<KeyCommand> keyCommands = new();
+    public delegate bool InputHandlerDelegate(KeyCode key);
 
-    public ICommand HandleInput() 
+    public ICommand HandleInput(InputHandlerDelegate inputMethod) 
     {
         foreach (KeyCommand keyCommand in keyCommands)
         {
-            if(Input.GetKeyDown(keyCommand.key)) 
+            if(inputMethod(keyCommand.key)) 
+            {
+                keyCommand.command.Execute();
+            }
+
+            if(Input.GetKeyUp(keyCommand.key)) 
+            {
+                keyCommand.command.Undo();
+            }
+        }
+
+        return null;
+    }
+
+    public ICommand HandleContinuousInput(InputHandlerDelegate inputMethod) 
+    {
+        foreach (KeyCommand keyCommand in keyCommands)
+        {
+            // Use the delegate for continuous actions
+            if (inputMethod(keyCommand.key))
             {
                 keyCommand.command.Execute();
             }
