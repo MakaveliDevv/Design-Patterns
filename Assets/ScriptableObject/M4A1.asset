@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 88e35015b6303c244a9ee5d6d706b566, type: 3}
   m_Name: M4A1
   m_EditorClassIdentifier: 
-  Name: 
+  Name: M4A1
   isActive: 1
   isShooting: 1
   fireRate: 2
-  nextTimeToFire: 0
+  nextTimeToFire: 37.970127

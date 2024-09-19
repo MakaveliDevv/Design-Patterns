@@ -9,15 +9,7 @@ public class InputHandler
     {
         foreach (KeyCommand keyCommand in keyCommands)
         {
-            if(inputMethod(keyCommand.key)) 
-            {
-                keyCommand.command.Execute();
-            }
-
-            if(Input.GetKeyUp(keyCommand.key)) 
-            {
-                keyCommand.command.Undo();
-            }
+            if(inputMethod(keyCommand.key)) keyCommand.command.Execute();
         }
 
         return null;
@@ -27,11 +19,8 @@ public class InputHandler
     {
         foreach (KeyCommand keyCommand in keyCommands)
         {
-            // Use the delegate for continuous actions
-            if (inputMethod(keyCommand.key))
-            {
-                keyCommand.command.Execute();
-            }
+            if (inputMethod(keyCommand.key)) keyCommand.command.Execute();
+            if(Input.GetKeyUp(keyCommand.key)) keyCommand.command.Undo(); 
         }
 
         return null;

@@ -14,15 +14,15 @@ public class GameManager : MonoBehaviour
     private void Awake() 
     {
         inputHandler = new();
+
         weaponSwitchCommand = new(weaponInventory, activeWeapon)
         {
             currentWeapon = weaponInventory[0]
         };
-        
 
         inputHandler.BindInputToCommand(KeyCode.Q, weaponSwitchCommand);
-        inputHandler.BindInputToCommand(KeyCode.Space, new JumpCommand());
         inputHandler.BindInputToCommand(KeyCode.S, new ShootCommand(weaponInventory));
+        // inputHandler.BindInputToCommand(KeyCode.E, new AddWeaponCommand(weaponInventory));
     }
 
     private void Start() 
@@ -38,14 +38,14 @@ public class GameManager : MonoBehaviour
         // Set the first weapon as active and add it to activeWeapon list
         weaponInventory[0].isActive = true;
         activeWeapon.Add(weaponInventory[0]); 
-        
-        Debug.Log($"{weaponSwitchCommand.currentWeapon.name} initialized as active");
     }
 
     private void Update() 
-    {
+    {   
         if(activeWeapon[0].isShooting) inputHandler.HandleContinuousInput(key => Input.GetKey(key));  
-        else command = inputHandler.HandleInput(key => Input.GetKeyDown(key));
+        
+        command = inputHandler.HandleInput(key => Input.GetKeyDown(key));
+        
         command?.Execute();
         command?.Undo();
     }
