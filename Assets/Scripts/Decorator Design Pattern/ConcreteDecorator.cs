@@ -5,14 +5,10 @@ public class ConcreteDecorator : Decorator
 {
     public override void AddWeapon(List<Weapon> weaponList, Weapon weapon)
     {
-        if(weaponList.Contains(weapon)) 
-        {
-            Debug.LogError($"{weapon} already exist in the invetory");
-            return;
-        }
+        if(CheckInList(weaponList, weapon)) return;
 
         weaponList.Add(weapon);
-        Debug.Log($"{weapon} is added to the inventory");
+        Debug.Log($"{weapon} is added to the inventory");   
     }
 
     public override void RemoveWeapon(List<Weapon> weaponList, Weapon weapon)
@@ -25,4 +21,16 @@ public class ConcreteDecorator : Decorator
         weaponList.Remove(weapon);
         Debug.Log($"{weapon} is removed from the inventory");
     }
+
+    public override bool CheckInList(List<Weapon> weaponList, Weapon weapon) 
+    {
+        if(weaponList.Contains(weapon)) 
+        {
+            Debug.LogError($"{weapon} already exist in the invetory");
+            return true;
+        }
+
+        return false;
+    }
 }
+

@@ -13,8 +13,6 @@ public class InputHandler
             {
                 keyCommand.command.Execute();
                 keyPressed = true;
-                Debug.Log("HandleInput() executed!");	
-                return keyCommand.command;
             }
 
             if(Input.GetKeyUp(keyCommand.key)) 
@@ -37,6 +35,24 @@ public class InputHandler
         return null;
     }
 
+    public ICommand HandleMovement(
+        Transform transform, float moveSpeed, 
+        IAxisCommand horizontalAxis, IAxisCommand verticalAxis, Player player
+    ) 
+    {
+        if(horizontalAxis == null || verticalAxis == null) return null; 
+    
+        float x = horizontalAxis.GetAxisValue();
+        float y = verticalAxis.GetAxisValue();
+
+        Vector2 direction = moveSpeed * Time.deltaTime * new Vector2(x, y);
+        transform.Translate(direction);
+
+        // player.playerState = Player.PlayerState.Moving;
+
+        return null;
+    }
+
     public void BindInputToCommand(KeyCode keyCode, ICommand command) 
     {
         keyCommands.Add(new KeyCommand()
@@ -52,23 +68,5 @@ public class InputHandler
         items.ForEach(x => keyCommands.Remove(x));
 
         Debug.Log($"{keyCode} unbind");
-    }
-
-    public ICommand HandleMovement(
-        Transform transform, float moveSpeed, 
-        IAxisCommand horizontalAxis, IAxisCommand verticalAxis, Player player
-    ) 
-    {
-        if(horizontalAxis == null || verticalAxis == null) return null; 
-    
-        float x = horizontalAxis.GetAxisValue();
-        float y = verticalAxis.GetAxisValue();
-
-        Vector2 direction = moveSpeed * Time.deltaTime * new Vector2(x, y);
-        transform.Translate(direction);
-
-        player.playerState = Player.PlayerState.Moving;
-
-        return null;
     }
 }

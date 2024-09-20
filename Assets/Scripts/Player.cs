@@ -2,20 +2,11 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    public enum PlayerState
-    {
-        Moving,
-        Interacting,
-        Shooting,
-        Switching
-    }
-
-    public PlayerState playerState;
-
+    public Interactable interactable;
     private GameManager gameManager;
     private InputHandler inputHandler;
     private AddWeaponCommand addWeaponCommand;
-    public Interactable interactable;
+    private AddWeaponCommand lastWeaponCommand;
     private ICommand command;
 
     public bool inRange;
@@ -30,48 +21,39 @@ public class Player : MonoBehaviour
     void Update()
     {
         command = inputHandler.HandleInput();
-
         inputHandler.HandleMovement(
             transform, moveSpeed,
             new AxisCommand("Horizontal"), new AxisCommand("Vertical"), this);
 
-        if (inRange && interactable != null)
+        if (inRange && interactable != null && command is AddWeaponCommand)        
         {
             // Execute the command if it's a weapon-related command
-            if (command is AddWeaponCommand addWeaponCommand)
-            {
-                playerState = PlayerState.Interacting;
-                addWeaponCommand.Execute();
-            }
+            addWeaponCommand.Execute();
+            lastWeaponCommand = addWeaponCommand;
+
+            Destroy(interactable.gameObject);
+
+            // Unbind the input once executed
+            inputHandler.UnBindInput(KeyCode.E);
+            addWeaponCommand = null;
+
+            inputHandler.BindInputToCommand(KeyCode.R, lastWeaponCommand);
+
         }
 
-        inputHandler.BindInputToCommand(KeyCode.R, addWeaponCommand); 
-        
-        // Specifically handle R key logic if necessary
-        if (command != null && command != addWeaponCommand) 
+        // Check if the command corresponds to the R key command
+        if (command == inputHandler.keyCommands.Find(k => k.key == KeyCode.R)?.command && lastWeaponCommand != null)
         {
-            // Ensure R key is not triggering weapon addition
-            if (inputHandler.keyCommands.Find(k => k.key == KeyCode.R)?.command == command)
-            {
-                // addWeaponCommand.Undo();
-                Debug.Log("R key command executed.");
-            }
+            Debug.Log("R key detected");
+            lastWeaponCommand.Undo();
+            Debug.Log("R key command executed for undo.");
+
+            inputHandler.UnBindInput(KeyCode.R);
+            lastWeaponCommand = null;
+
+
+            Debug.Log("Unbind R key.");
         }
-    
-        // // Check if the command is for R key (assuming you bind it in the OnTriggerEnter2D method)
-        // if (command is not null && command == inputHandler.keyCommands.Find(k => k.key == KeyCode.R)?.command)
-        // {
-        //     addWeaponCommand.Undo();
-        //     // Execute R key command logic here
-        //     Debug.Log("R key command executed");
-        //     // Add logic for the R key if needed
-        // }
-
-
-        // if(inputHandler.keyPressed) 
-        // {
-        //     Debug.Log("Key is pressed");
-        // }
     }
 
     private void OnTriggerEnter2D(Collider2D collider) 
@@ -82,16 +64,29 @@ public class Player : MonoBehaviour
 
             if(this.interactable.scriptableObject is Weapon weapon) 
             {
-                // Bind the command with the correct weapon once upon collision.
-                AddWeaponCommand newAddWeaponCommand = new(new ConcreteComponent(), gameManager.weaponInventory, weapon);
-                addWeaponCommand = newAddWeaponCommand;
-
-                inputHandler.BindInputToCommand(KeyCode.E, addWeaponCommand);  // Bind it when in range
                 interactable.InRange();
+
+                // Bind the command with the correct weapon once upon collision.
+                addWeaponCommand = new(new ConcreteComponent(), gameManager.weaponInventory, weapon);
+                inputHandler.BindInputToCommand(KeyCode.E, addWeaponCommand);  // Bind it when in range
                 Debug.Log($"Ready to add {weapon.Name} into the inventory"); 
             }
         } 
     }
 
-    private void OnTriggerExit2D(Collider2D collider) { inRange = false; interactable = null; }
+    private void OnTriggerExit2D(Collider2D collider) 
+    { 
+        if (collider.TryGetComponent<Interactable>(out var interactable) && this.interactable == interactable)
+        {
+            inRange = false;
+            this.interactable = null;
+            
+            // Reset the command binding when leaving the radius
+            if (addWeaponCommand != null)
+            {
+                inputHandler.UnBindInput(KeyCode.E);
+                addWeaponCommand = null;
+            }
+        }
+    }
 }

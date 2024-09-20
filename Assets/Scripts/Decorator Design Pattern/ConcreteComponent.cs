@@ -19,7 +19,7 @@ public class ConcreteComponent : IComponent
         // Invoke method to add a weapon
         concreteDecorator.AddWeapon(weaponList, weapon);
 
-        // Other stuff
+        // Other stuff for the weapon
 
     }
 
