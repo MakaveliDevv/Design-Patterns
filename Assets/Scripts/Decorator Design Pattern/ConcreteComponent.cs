@@ -1,11 +1,14 @@
 using System.Collections.Generic;
-using Unity.VisualScripting;
-using UnityEngine;
-using UnityEngine.Video;
 
 public class ConcreteComponent : IComponent
 {
     private ConcreteDecorator concreteDecorator;
+
+    public ConcreteComponent() 
+    {
+        CustomAwake();
+    }
+    
     public void CustomAwake() 
     {
         concreteDecorator = new();
@@ -13,9 +16,6 @@ public class ConcreteComponent : IComponent
 
     public void AddWeapon(List<Weapon> weaponList, Weapon weapon)
     {
-        // If in range, then
-        // If certain condition is met
-        // Then
         // Invoke method to add a weapon
         concreteDecorator.AddWeapon(weaponList, weapon);
 
@@ -25,10 +25,8 @@ public class ConcreteComponent : IComponent
 
     public void RemoveWeapon(List<Weapon> weaponList, Weapon weapon)
     {    
-        // If certain condition is met
-        // Then
         // Invoke method to remove a weapon
-        concreteDecorator.AddWeapon(weaponList, weapon);
+        concreteDecorator.RemoveWeapon(weaponList, weapon);
 
         // Other stuff
     

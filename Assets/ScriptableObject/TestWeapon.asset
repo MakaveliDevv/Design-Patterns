@@ -10,10 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 88e35015b6303c244a9ee5d6d706b566, type: 3}
-  m_Name: AK-47
+  m_Name: TestWeapon
   m_EditorClassIdentifier: 
-  weapon: {fileID: 7592003363757946974, guid: 753e011613295404a8c86fed2dec596b, type: 3}
-  Name: AK-47
+  Name: Test Weapon
   isActive: 1
   isShooting: 0
   fireRate: 2

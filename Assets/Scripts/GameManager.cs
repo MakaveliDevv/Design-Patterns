@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -21,8 +20,7 @@ public class GameManager : MonoBehaviour
         };
 
         inputHandler.BindInputToCommand(KeyCode.Q, weaponSwitchCommand);
-        inputHandler.BindInputToCommand(KeyCode.S, new ShootCommand(weaponInventory));
-        // inputHandler.BindInputToCommand(KeyCode.E, new AddWeaponCommand(new ConcreteComponent(), ));
+        inputHandler.BindInputToCommand(KeyCode.Mouse0, new ShootCommand(weaponInventory));
     }
 
     private void Start() 
@@ -42,10 +40,9 @@ public class GameManager : MonoBehaviour
 
     private void Update() 
     {   
-        if(activeWeapon[0].isShooting) inputHandler.HandleContinuousInput(key => Input.GetKey(key));  
-        
-        command = inputHandler.HandleInput(key => Input.GetKeyDown(key));
-        
+        if(activeWeapon[0].isShooting) command = inputHandler.HandleContinuousInput();  
+    
+        command = inputHandler.HandleInput();
         command?.Execute();
         command?.Undo();
     }
