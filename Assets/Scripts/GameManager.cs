@@ -22,7 +22,7 @@ public class GameManager : MonoBehaviour
 
         inputHandler.BindInputToCommand(KeyCode.Q, weaponSwitchCommand);
         inputHandler.BindInputToCommand(KeyCode.S, new ShootCommand(weaponInventory));
-        // inputHandler.BindInputToCommand(KeyCode.E, new AddWeaponCommand(weaponInventory));
+        // inputHandler.BindInputToCommand(KeyCode.E, new AddWeaponCommand(new ConcreteComponent(), ));
     }
 
     private void Start() 

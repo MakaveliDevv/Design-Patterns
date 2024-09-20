@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Video;
 
 public class ConcreteComponent : IComponent
 {
@@ -8,9 +10,10 @@ public class ConcreteComponent : IComponent
     {
         concreteDecorator = new();
     }
-    
+
     public void AddWeapon(List<Weapon> weaponList, Weapon weapon)
     {
+        // If in range, then
         // If certain condition is met
         // Then
         // Invoke method to add a weapon
