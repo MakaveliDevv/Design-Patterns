@@ -8,10 +8,10 @@ public class ConcreteDecorator : Decorator
         if(weaponList.Contains(weapon)) 
         {
             Debug.LogError($"{weapon} already exist in the invetory");
+            return;
         }
 
         weaponList.Add(weapon);
-        
         Debug.Log($"{weapon} is added to the inventory");
     }
 
@@ -24,6 +24,5 @@ public class ConcreteDecorator : Decorator
 
         weaponList.Remove(weapon);
         Debug.Log($"{weapon} is removed from the inventory");
-        throw new System.NotImplementedException();
     }
 }

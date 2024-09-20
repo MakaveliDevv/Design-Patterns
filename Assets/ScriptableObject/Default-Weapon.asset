@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 88e35015b6303c244a9ee5d6d706b566, type: 3}
-  m_Name: TestWeapon
+  m_Name: Default-Weapon
   m_EditorClassIdentifier: 
-  Name: Test Weapon
-  isActive: 1
+  Name: Default-Weapon
+  isActive: 0
   isShooting: 0
   fireRate: 2
   nextTimeToFire: 0

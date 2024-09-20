@@ -2,15 +2,25 @@ using System.Collections.Generic;
 using UnityEngine;
 public class InputHandler
 {
-    public bool isInputDone;
-    private readonly List<KeyCommand> keyCommands = new();
+    public List<KeyCommand> keyCommands = new();
+    public bool keyPressed;
 
     public ICommand HandleInput() 
     {
         foreach (KeyCommand keyCommand in keyCommands)
         {
-            if(Input.GetKeyDown(keyCommand.key)) keyCommand.command.Execute();
-            isInputDone = true;
+            if(Input.GetKeyDown(keyCommand.key)) 
+            {
+                keyCommand.command.Execute();
+                keyPressed = true;
+                Debug.Log("HandleInput() executed!");	
+                return keyCommand.command;
+            }
+
+            if(Input.GetKeyUp(keyCommand.key)) 
+            {
+                keyPressed = false;
+            }
         }
 
         return null;
@@ -46,7 +56,7 @@ public class InputHandler
 
     public ICommand HandleMovement(
         Transform transform, float moveSpeed, 
-        IAxisCommand horizontalAxis, IAxisCommand verticalAxis
+        IAxisCommand horizontalAxis, IAxisCommand verticalAxis, Player player
     ) 
     {
         if(horizontalAxis == null || verticalAxis == null) return null; 
@@ -56,6 +66,8 @@ public class InputHandler
 
         Vector2 direction = moveSpeed * Time.deltaTime * new Vector2(x, y);
         transform.Translate(direction);
+
+        player.playerState = Player.PlayerState.Moving;
 
         return null;
     }
